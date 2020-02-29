@@ -1,0 +1,83 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Workspaces Setup",
+  "Parameters": {
+    "Alias": {
+      "Type": "String",
+      "Default": "youtube",
+      "Description": "AD Alias"
+    },
+    "Domain": {
+      "Type": "String",
+      "Default": "ad.domain.tld",
+      "Description": "AD Alias"
+    },
+    "Password": {
+      "Type": "String",
+      "Default": "",
+      "Description": "AD Password",
+      "NoEcho": true
+    },
+    "Subnets": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "Subnets for AD"
+    },
+    "Vpc": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Vpc for AD"
+    }
+  },
+  "Resources": {
+    "ADService": {
+      "Type": "AWS::DirectoryService::SimpleAD",
+      "Properties": {
+        "CreateAlias": true,
+        "Description": "Simple AD",
+        "EnableSso": false,
+        "Name": {
+          "Ref": "Domain"
+        },
+        "Password": {
+          "Ref": "Password"
+        },
+        "ShortName": {
+          "Ref": "Alias"
+        },
+        "Size": "Small",
+        "VpcSettings": {
+          "SubnetIds": {
+            "Ref": "Subnets"
+          },
+          "VpcId": {
+            "Ref": "Vpc"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "DirectoryServiceId": {
+      "Description": "AD ID",
+      "Value": {"Ref": "ADService"},
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ad-service-id"
+        }
+      }
+    },
+    "AD": {
+      "Description": "AD DNS",
+      "Value": {
+        "Fn::GetAtt": [
+          "ADService",
+          "Alias"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ad-service-alias"
+        }
+      }
+    }
+  }
+}

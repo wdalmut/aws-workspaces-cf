@@ -1,0 +1,50 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Workspace",
+  "Parameters": {
+    "BundleId": {
+      "Type": "String",
+      "Default": "wsb-9jvhtb24f",
+      "Description": "aws workspaces describe-workspace-bundles --owner AMAZON"
+    },
+    "DirectoryId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Directory Service ID"
+    },
+    "Username": {
+      "Type": "String",
+      "Default": "",
+      "Description": "The user name of the user for the WorkSpace. This user name must exist in the AWS Directory Service directory for the WorkSpace."
+    },
+    "VolumeSize": {
+      "Type" : "Number",
+      "Default" : "50",
+      "Description" : "The size of the user storage. (pay attention this depends on workspace bundle id)"
+    }
+  },
+  "Resources": {
+    "Workspace": {
+      "Type": "AWS::WorkSpaces::Workspace",
+      "Properties": {
+        "BundleId": {
+          "Ref": "BundleId"
+        },
+        "DirectoryId": {
+          "Ref": "DirectoryId"
+        },
+        "RootVolumeEncryptionEnabled": false,
+        "UserName": {
+          "Ref": "Username"
+        },
+        "UserVolumeEncryptionEnabled": false,
+        "WorkspaceProperties": {
+          "RunningMode": "AUTO_STOP",
+          "RunningModeAutoStopTimeoutInMinutes": "180",
+          "UserVolumeSizeGib": {"Ref": "VolumeSize"}
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}
